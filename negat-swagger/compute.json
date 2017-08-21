@@ -82,7 +82,7 @@
         },
         "x-ms-examples": {
           "ListOperations": {
-            "$ref": "negat-swagger/ListOperations.json"
+            "$ref": "ListOperations.json"
           }
         }
       },
