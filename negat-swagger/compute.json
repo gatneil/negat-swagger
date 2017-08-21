@@ -79,6 +79,11 @@
               "$ref": "#/definitions/AvailabilitySet"
             }
           }
+        },
+        "x-ms-examples": {
+          "ListOperations": {
+            "$ref": "ListOperations.json"
+          }
         }
       },
       "delete": {
