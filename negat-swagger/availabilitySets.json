@@ -1,4 +1,9 @@
 {
+  "info": {
+    "title": "ComputeManagementClient", 
+    "description": "The Compute Management Client.", 
+    "version": "2017-03-30"
+  }, 
   "paths": {
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/availabilitySets": {
       "get": {
@@ -231,6 +236,24 @@
       }
     }
   }, 
+  "schemes": [
+    "https"
+  ], 
+  "produces": [
+    "application/json"
+  ], 
+  "securityDefinitions": {
+    "azure_auth": {
+      "type": "oauth2", 
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize", 
+      "flow": "implicit", 
+      "description": "Azure Active Directory OAuth2 Flow", 
+      "scopes": {
+        "user_impersonation": "impersonate your user account"
+      }
+    }
+  }, 
+  "host": "management.azure.com", 
   "definitions": {
     "AvailabilitySetProperties": {
       "properties": {
@@ -292,5 +315,16 @@
       }, 
       "description": "The List Availability Set operation response."
     }
-  }
+  }, 
+  "security": [
+    {
+      "azure_auth": [
+        "user_impersonation"
+      ]
+    }
+  ], 
+  "swagger": "2.0", 
+  "consumes": [
+    "application/json"
+  ]
 }
