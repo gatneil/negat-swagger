@@ -1,8 +1,37 @@
 {
+  "swagger": "2.0", 
   "info": {
     "title": "ComputeManagementClient", 
     "description": "The Compute Management Client.", 
     "version": "2017-03-30"
+  }, 
+  "host": "management.azure.com", 
+  "schemes": [
+    "https"
+  ], 
+  "consumes": [
+    "application/json"
+  ], 
+  "produces": [
+    "application/json"
+  ], 
+  "security": [
+    {
+      "azure_auth": [
+        "user_impersonation"
+      ]
+    }
+  ], 
+  "securityDefinitions": {
+    "azure_auth": {
+      "type": "oauth2", 
+      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize", 
+      "flow": "implicit", 
+      "description": "Azure Active Directory OAuth2 Flow", 
+      "scopes": {
+        "user_impersonation": "impersonate your user account"
+      }
+    }
   }, 
   "paths": {
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/images/{imageName}": {
@@ -148,34 +177,6 @@
         }
       }
     }, 
-    "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/images": {
-      "get": {
-        "tags": [
-          "Images"
-        ], 
-        "operationId": "Images_List", 
-        "description": "Gets the list of Images in the subscription. Use nextLink property in the response to get the next page of Images. Do this till nextLink is not null to fetch all the Images.", 
-        "parameters": [
-          {
-            "$ref": "./compute.json#/parameters/ApiVersionParameter"
-          }, 
-          {
-            "$ref": "./compute.json#/parameters/SubscriptionIdParameter"
-          }
-        ], 
-        "responses": {
-          "200": {
-            "description": "OK", 
-            "schema": {
-              "$ref": "#/definitions/ImageListResult"
-            }
-          }
-        }, 
-        "x-ms-pageable": {
-          "nextLinkName": "nextLink"
-        }
-      }
-    }, 
     "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/images": {
       "get": {
         "tags": [
@@ -210,45 +211,50 @@
           "nextLinkName": "nextLink"
         }
       }
-    }
-  }, 
-  "schemes": [
-    "https"
-  ], 
-  "produces": [
-    "application/json"
-  ], 
-  "securityDefinitions": {
-    "azure_auth": {
-      "type": "oauth2", 
-      "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/authorize", 
-      "flow": "implicit", 
-      "description": "Azure Active Directory OAuth2 Flow", 
-      "scopes": {
-        "user_impersonation": "impersonate your user account"
+    }, 
+    "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/images": {
+      "get": {
+        "tags": [
+          "Images"
+        ], 
+        "operationId": "Images_List", 
+        "description": "Gets the list of Images in the subscription. Use nextLink property in the response to get the next page of Images. Do this till nextLink is not null to fetch all the Images.", 
+        "parameters": [
+          {
+            "$ref": "./compute.json#/parameters/ApiVersionParameter"
+          }, 
+          {
+            "$ref": "./compute.json#/parameters/SubscriptionIdParameter"
+          }
+        ], 
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/ImageListResult"
+            }
+          }
+        }, 
+        "x-ms-pageable": {
+          "nextLinkName": "nextLink"
+        }
       }
     }
   }, 
-  "host": "management.azure.com", 
   "definitions": {
-    "ImageStorageProfile": {
+    "Image": {
       "properties": {
-        "osDisk": {
-          "$ref": "#/definitions/ImageOSDisk", 
-          "description": "The OS disk."
-        }, 
-        "dataDisks": {
-          "type": "array", 
-          "items": {
-            "$ref": "#/definitions/ImageDataDisk"
-          }, 
-          "description": "The data disks."
+        "properties": {
+          "x-ms-client-flatten": true, 
+          "$ref": "#/definitions/ImageProperties"
         }
       }, 
-      "required": [
-        "osDisk"
+      "allOf": [
+        {
+          "$ref": "./compute.json#/definitions/Resource"
+        }
       ], 
-      "description": "Describes a storage profile."
+      "description": "Describes an Image."
     }, 
     "ImageProperties": {
       "properties": {
@@ -268,85 +274,24 @@
       }, 
       "description": "Describes the properties of an Image."
     }, 
-    "ImageListResult": {
+    "ImageStorageProfile": {
       "properties": {
-        "value": {
+        "osDisk": {
+          "$ref": "#/definitions/ImageOSDisk", 
+          "description": "The OS disk."
+        }, 
+        "dataDisks": {
           "type": "array", 
           "items": {
-            "$ref": "#/definitions/Image"
+            "$ref": "#/definitions/ImageDataDisk"
           }, 
-          "description": "The list of Images."
-        }, 
-        "nextLink": {
-          "type": "string", 
-          "description": "The uri to fetch the next page of Images. Call ListNext() with this to fetch the next page of Images."
+          "description": "The data disks."
         }
       }, 
       "required": [
-        "value"
+        "osDisk"
       ], 
-      "description": "The List Image operation response."
-    }, 
-    "ImageDataDisk": {
-      "properties": {
-        "lun": {
-          "type": "integer", 
-          "format": "int32", 
-          "description": "The logical unit number."
-        }, 
-        "snapshot": {
-          "$ref": "./compute.json#/definitions/SubResource", 
-          "description": "The snapshot."
-        }, 
-        "managedDisk": {
-          "$ref": "./compute.json#/definitions/SubResource", 
-          "description": "The managedDisk."
-        }, 
-        "blobUri": {
-          "type": "string", 
-          "description": "The Virtual Hard Disk."
-        }, 
-        "caching": {
-          "type": "string", 
-          "description": "The caching type.", 
-          "enum": [
-            "None", 
-            "ReadOnly", 
-            "ReadWrite"
-          ], 
-          "x-ms-enum": {
-            "name": "CachingTypes", 
-            "modelAsString": false
-          }
-        }, 
-        "diskSizeGB": {
-          "type": "integer", 
-          "format": "int32", 
-          "description": "The initial disk size in GB for blank data disks, and the new desired size for existing OS and Data disks."
-        }, 
-        "storageAccountType": {
-          "$ref": "./compute.json#/definitions/StorageAccountType", 
-          "description": "The Storage Account type."
-        }
-      }, 
-      "required": [
-        "lun"
-      ], 
-      "description": "Describes a data disk."
-    }, 
-    "Image": {
-      "properties": {
-        "properties": {
-          "x-ms-client-flatten": true, 
-          "$ref": "#/definitions/ImageProperties"
-        }
-      }, 
-      "allOf": [
-        {
-          "$ref": "./compute.json#/definitions/Resource"
-        }
-      ], 
-      "description": "Describes an Image."
+      "description": "Describes a storage profile."
     }, 
     "ImageOSDisk": {
       "properties": {
@@ -414,17 +359,72 @@
         "osState"
       ], 
       "description": "Describes an Operating System disk."
+    }, 
+    "ImageDataDisk": {
+      "properties": {
+        "lun": {
+          "type": "integer", 
+          "format": "int32", 
+          "description": "The logical unit number."
+        }, 
+        "snapshot": {
+          "$ref": "./compute.json#/definitions/SubResource", 
+          "description": "The snapshot."
+        }, 
+        "managedDisk": {
+          "$ref": "./compute.json#/definitions/SubResource", 
+          "description": "The managedDisk."
+        }, 
+        "blobUri": {
+          "type": "string", 
+          "description": "The Virtual Hard Disk."
+        }, 
+        "caching": {
+          "type": "string", 
+          "description": "The caching type.", 
+          "enum": [
+            "None", 
+            "ReadOnly", 
+            "ReadWrite"
+          ], 
+          "x-ms-enum": {
+            "name": "CachingTypes", 
+            "modelAsString": false
+          }
+        }, 
+        "diskSizeGB": {
+          "type": "integer", 
+          "format": "int32", 
+          "description": "The initial disk size in GB for blank data disks, and the new desired size for existing OS and Data disks."
+        }, 
+        "storageAccountType": {
+          "$ref": "./compute.json#/definitions/StorageAccountType", 
+          "description": "The Storage Account type."
+        }
+      }, 
+      "required": [
+        "lun"
+      ], 
+      "description": "Describes a data disk."
+    }, 
+    "ImageListResult": {
+      "properties": {
+        "value": {
+          "type": "array", 
+          "items": {
+            "$ref": "#/definitions/Image"
+          }, 
+          "description": "The list of Images."
+        }, 
+        "nextLink": {
+          "type": "string", 
+          "description": "The uri to fetch the next page of Images. Call ListNext() with this to fetch the next page of Images."
+        }
+      }, 
+      "required": [
+        "value"
+      ], 
+      "description": "The List Image operation response."
     }
-  }, 
-  "security": [
-    {
-      "azure_auth": [
-        "user_impersonation"
-      ]
-    }
-  ], 
-  "swagger": "2.0", 
-  "consumes": [
-    "application/json"
-  ]
+  }
 }
